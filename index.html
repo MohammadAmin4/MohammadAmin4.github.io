@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laser Thief - Amin Pro</title>
+    <style>
+        body { margin: 0; background: #050505; overflow: hidden; touch-action: none; font-family: sans-serif; }
+        #ui { position: absolute; top: 10px; left: 10px; color: #ff0055; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="ui">DIAMONDS: <span id="sc">0</span></div>
+    <canvas id="c"></canvas>
+<script>
+    const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    let score = 0, player = {x: 30, y: 30}, lasers = [], gem = {x: canvas.width-50, y: canvas.height-50};
+    for(let i=0; i<8; i++) lasers.push({y: 100 + i*80, s: 2 + Math.random()*3, dir: 1});
+    function draw() {
+        ctx.fillStyle = "#050505"; ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.shadowBlur = 15; ctx.shadowColor = "red"; ctx.strokeStyle = "red"; ctx.lineWidth = 3;
+        lasers.forEach(l => {
+            l.y += l.s * l.dir; if(l.y > canvas.height || l.y < 50) l.dir *= -1;
+            ctx.beginPath(); ctx.moveTo(0, l.y); ctx.lineTo(canvas.width, l.y); ctx.stroke();
+            if(Math.abs(player.y - l.y) < 15) { player.x = 30; player.y = 30; }
+        });
+        ctx.shadowColor = "#00ff88"; ctx.fillStyle = "#00ff88";
+        ctx.beginPath(); ctx.arc(gem.x, gem.y, 20, 0, 7); ctx.fill();
+        if(Math.hypot(player.x - gem.x, player.y - gem.y) < 30) { score++; player.x=30; player.y=30; }
+        ctx.shadowColor = "white"; ctx.fillStyle = "white";
+        ctx.beginPath(); ctx.arc(player.x, player.y, 15, 0, 7); ctx.fill();
+        document.getElementById("sc").innerText = score;
+        requestAnimationFrame(draw);
+    }
+    window.addEventListener("touchmove", e => { player.x = e.touches[0].clientX; player.y = e.touches[0].clientY; });
+    draw();
+</script>
+</body>
+</html>
